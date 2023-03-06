@@ -1,0 +1,25 @@
+{
+  "method": "POST",
+  "url": "/api/application/#{applicationID}",
+  "body": {
+    "application": {
+      "name": "Family API",
+      "oauthConfiguration": {
+        "clientSecret": "#{clientSecret}",
+        "authorizedRedirectURLs": [
+          "http://localhost:3000/oauth-redirect"
+        ],
+        "authorizedOriginURLs": [
+          "http://localhost:3000"
+        ],
+        "proofKeyForCodeExchangePolicy": "Required",
+        "logoutURL": "http://localhost:3000/logout",
+        "enabledGrants": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "requireRegistration": "true"
+      }
+    }
+  }
+}

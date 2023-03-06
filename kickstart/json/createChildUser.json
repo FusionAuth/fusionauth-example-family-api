@@ -1,0 +1,12 @@
+{
+  "method": "POST",
+  "url": "/api/user/#{childUserID}",
+  "body": {
+    "user": {
+      "birthDate": "2015-01-18",
+      "email": "child@example.com",
+      "firstName": "Child",
+      "password": "password"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "variables": {
+    "apiKey": "6iIiGfOSMgzpQusy5M4MlM8iU04uuLqnbABwUE_HcAlBjf0IP4k9Pxv4",
+    "applicationID": "779d01fb-94c1-4f8c-9c0f-6783aff44a34",
+    "clientSecret" : "fs9PIEj-Th-qiribC9H-x5Rnw1s3YnALnqSCXnGwdFQ",
+    "parentUserID": "#{UUID()}",
+    "childUserID": "#{UUID()}",
+    "adminUserID" : "#{UUID()}",
+    "familyID": "#{UUID()}",
+    "consentID": "512603b1-89ed-4027-9e69-40fc275fcfd8"
+  },
+  "apiKeys": [
+    {
+      "key": "#{apiKey}"
+    }
+  ],
+  "requests": [
+    "&{json/createApplication.json}",
+    "&{json/createConsent.json}",
+    "&{json/createChildUser.json}",
+    "&{json/createParentUser.json}",
+    "&{json/createAdminUser.json}",
+    "&{json/registerParentUser.json}",
+    "&{json/registerChildUser.json}",
+    "&{json/addParentToFamily.json}",
+    "&{json/addChildToFamily.json}",
+    "&{json/addConsentToParent.json}"
+  ]
+}

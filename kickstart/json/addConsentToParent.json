@@ -1,0 +1,11 @@
+{
+  "method": "POST",
+  "url": "/api/user/consent",
+  "body": {
+    "userConsent": {
+      "consentId": "#{consentID}",
+      "giverUserId": "#{parentUserID}",
+      "userId": "#{parentUserID}"
+    }
+  }
+}
