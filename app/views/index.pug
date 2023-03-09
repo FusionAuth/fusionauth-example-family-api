@@ -4,7 +4,7 @@ block content
   h1= title
   p Welcome to #{title}
 
-  - var clientId = '779d01fb-94c1-4f8c-9c0f-6783aff44a34'
+  - var clientId = 'a342d269-42dd-4909-a1a9-807601d63750'
   if user
     p Hello #{user.firstName}
     if family
@@ -13,21 +13,23 @@ block content
       if family.length > 0 && self.role == "Adult"
         p Confirmed children
         ul
-          each val in family
+          each child in family
              form(action='/change-consent-status', method='POST')
-                p #{val.email}
+                p #{child.email}
                   |
-                  Consent #{val.consentstatus}
-                  input(type='hidden', name='userConsentId', value=val.userConsentId)
+                  Consent #{child.consentstatus}
+                  input(type='hidden', name='userConsentId', value=child.userConsentId)
                   |
-                  if val.status == "Active"
+                  if child.status == "Active"
                     input(type='submit', value='Revoke Consent')
                     input(type='hidden', name='desiredStatus', value='Revoked')
+                    input(type='hidden', name='userId', value=child.id)
                   else
                     input(type='hidden', name='desiredStatus', value='Active')
                     input(type='submit', value='Grant Consent')
-    if self.status == "Active"
+                    input(type='hidden', name='userId', value=child.id)
+    if self.role == "Adult" || self.status == "Active"
       h2 Restricted Section
-      p This is a restricted section. Only authorised users can view it.
+      p This is a restricted section. Only adults and children granted consent by an adult can view it.
   else
     a(href='http://localhost:9011/oauth2/authorize?client_id='+clientId+'&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Foauth-redirect&scope=offline_access&code_challenge='+challenge+'&code_challenge_method=S256') Login

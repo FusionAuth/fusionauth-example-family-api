@@ -3,10 +3,10 @@ var router = express.Router();
 
 const pkceChallenge = require('pkce-challenge').default;
 const { FusionAuthClient } = require('@fusionauth/typescript-client');
-const clientId = '779d01fb-94c1-4f8c-9c0f-6783aff44a34';
-const clientSecret = 'fs9PIEj-Th-qiribC9H-x5Rnw1s3YnALnqSCXnGwdFQ';
-const client = new FusionAuthClient('6iIiGfOSMgzpQusy5M4MlM8iU04uuLqnbABwUE_HcAlBjf0IP4k9Pxv4', 'http://localhost:9011');
-const consentId = '512603b1-89ed-4027-9e69-40fc275fcfd8';
+const clientId = 'a342d269-42dd-4909-a1a9-807601d63750';
+const clientSecret = 'HfvqsARHCJfCYj7D7ZqW4guJC1FemcRfHDImcuqX4Es';
+const client = new FusionAuthClient('qo7fh-gSYe4CQFfDhUZfbMzzRzRXHDMwBRoG8ItRqFNxQyxu6J1rz9n8', 'http://localhost:9011');
+const consentId = '3c3e0176-2f36-4b47-b89b-396f5ffad123';
 
 async function getUserProfiles(familyUsers) {
   const getUsers = familyUsers.map(elem => client.retrieveUser(elem.userId));
@@ -113,28 +113,45 @@ router.post('/change-consent-status', async function (req, res, next) {
     // force signin
     res.redirect(302, '/');
   }
-  const userConsentId = req.body.userConsentId;
+
   let desiredStatus = req.body.desiredStatus;
   if (desiredStatus !== 'Active') {
     desiredStatus = 'Revoked';
   }
 
-  // check current user is an adult
-  const response = await client.retrieveFamilies(req.session.user.id);
-  if (response.response.families && response.response.families.length >= 1) {
-    let self = response.response.families[0].members.filter(elem => elem.userId === req.session.user.id)[0];
-    if (self.role !== 'Adult') {
-      res.send(403, 'Only Adult users can change consents');
-    }
-  }
-
-  if (!userConsentId) {
-    return res.send(400, 'No userConsentId provided!');
-  }
-
-  const patchBody = { userConsent: { status: desiredStatus } };
   try {
-    const response = await client.patchUserConsent(userConsentId, patchBody);
+    // check current user is an adult and that the child is part of their family. 
+    const response = await client.retrieveFamilies(req.session.user.id);
+    if (response.response.families && response.response.families.length >= 1) {
+      let self = response.response.families[0].members.filter(elem => elem.userId === req.session.user.id)[0];
+      if (self.role !== 'Adult') {
+        res.send(403, 'Only Adult users can change consents');
+      }
+      if (response.response.families[0].members.filter(elem => elem.userId === req.body.userId).length < 1) {
+        res.send(403, 'You cannot access families you are not part of');
+      }
+    }
+
+    // Now get the UserConsent for the child, or create one if not available:
+
+    const consentsResponse = await client.retrieveUserConsents(req.body.userId);
+    let userConsent = consentsResponse.response.userConsents.filter((userConsent) => userConsent.consent.id === consentId)[0];
+    if (!userConsent) {
+      // The child does not yet have a consent. Create a consent for this child.
+      const createConsent = await client.createUserConsent(null, {
+        userConsent: {
+          consentId: consentId,
+          giverUserId: req.session.user.id,
+          status: "Active",
+          userId: req.body.userId
+        }
+      });
+      userConsent = createConsent.response.userConsent;
+    }
+
+    const patchBody = { userConsent: { status: desiredStatus } };
+    await client.patchUserConsent(userConsent.id, patchBody);
+
     res.redirect(302, '/');
   } catch (err) {
     console.log('in error');
