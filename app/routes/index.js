@@ -3,10 +3,10 @@ var router = express.Router();
 
 const pkceChallenge = require('pkce-challenge').default;
 const { FusionAuthClient } = require('@fusionauth/typescript-client');
-const clientId = 'a342d269-42dd-4909-a1a9-807601d63750';
-const clientSecret = 'HfvqsARHCJfCYj7D7ZqW4guJC1FemcRfHDImcuqX4Es';
-const client = new FusionAuthClient('qo7fh-gSYe4CQFfDhUZfbMzzRzRXHDMwBRoG8ItRqFNxQyxu6J1rz9n8', 'http://localhost:9011');
-const consentId = '3c3e0176-2f36-4b47-b89b-396f5ffad123';
+const clientId = '779d01fb-94c1-4f8c-9c0f-6783aff44a34';
+const clientSecret = 'fs9PIEj-Th-qiribC9H-x5Rnw1s3YnALnqSCXnGwdFQ';
+const client = new FusionAuthClient('6iIiGfOSMgzpQusy5M4MlM8iU04uuLqnbABwUE_HcAlBjf0IP4k9Pxv4', 'http://localhost:9011');
+const consentId = '512603b1-89ed-4027-9e69-40fc275fcfd8';
 
 async function getUserProfiles(familyUsers) {
   const getUsers = familyUsers.map(elem => client.retrieveUser(elem.userId));
@@ -108,6 +108,7 @@ router.get('/oauth-redirect', async function (req, res, next) {
 
 
 /* Change consent */
+/* Change consent */
 router.post('/change-consent-status', async function (req, res, next) {
   if (!req.session.user) {
     // force signin
@@ -120,7 +121,7 @@ router.post('/change-consent-status', async function (req, res, next) {
   }
 
   try {
-    // check current user is an adult and that the child is part of their family. 
+    // check current user is an adult and that the child is part of their family.
     const response = await client.retrieveFamilies(req.session.user.id);
     if (response.response.families && response.response.families.length >= 1) {
       let self = response.response.families[0].members.filter(elem => elem.userId === req.session.user.id)[0];
@@ -132,8 +133,7 @@ router.post('/change-consent-status', async function (req, res, next) {
       }
     }
 
-    // Now get the UserConsent for the child, or create one if not available:
-
+    // Now get the UserConsent for the child, or create one if one hasn't been granted yet:
     const consentsResponse = await client.retrieveUserConsents(req.body.userId);
     let userConsent = consentsResponse.response.userConsents.filter((userConsent) => userConsent.consent.id === consentId)[0];
     if (!userConsent) {

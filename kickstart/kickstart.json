@@ -23,7 +23,6 @@
     "&{json/registerParentUser.json}",
     "&{json/registerChildUser.json}",
     "&{json/addParentToFamily.json}",
-    "&{json/addChildToFamily.json}",
-    "&{json/addConsentToParent.json}"
+    "&{json/addChildToFamily.json}"
   ]
 }
