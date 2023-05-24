@@ -20,7 +20,7 @@ You will need the following things properly installed on your computer.
 In a new terminal
 
 * `cd app`
-* `npm run install`
+* `npm install`
 * `npm start` (this will block the current terminal)
 
 * [Open a browser](http://localhost:3000) to see result and click "Login".
