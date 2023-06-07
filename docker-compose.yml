@@ -17,10 +17,9 @@ services:
     restart: unless-stopped
     volumes:
       - db_data:/var/lib/postgresql/data
-
+  
   search:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.0
-    container_name: search
     environment:
       cluster.name: fusionauth
       bootstrap.memory_lock: "true"
@@ -40,7 +39,7 @@ services:
         hard: -1
     volumes:
       - search_data:/usr/share/elasticsearch/data
-
+  
   fusionauth:
     image: fusionauth/fusionauth-app:latest
     depends_on:
@@ -60,7 +59,7 @@ services:
       SEARCH_SERVERS: http://search:9200
       SEARCH_TYPE: elasticsearch
       FUSIONAUTH_APP_KICKSTART_FILE: ${FUSIONAUTH_APP_KICKSTART_FILE}
-
+    
     networks:
       - db_net
       - search_net
